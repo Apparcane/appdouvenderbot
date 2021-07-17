@@ -31,12 +31,18 @@ sg = StopGame('lastkey.txt')
 # start
 @dp.message_handler(commands=['start'])
 async def subscribe(message: types.Message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.username) + "\nText: " + str(message.text) + "\n")
     chat_id.set(message.from_user.id)
+    me = await bot.get_me()
+    await message.answer(f'Привет, меня зовут {me.first_name}. Я пока что в разработке, так что не ожидай много-го 😀')
 
 
 # Команда активации подписки
 @dp.message_handler(commands=['subscribe'])
 async def subscribe(message: types.Message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.username) + "\nText: " + str(message.text) + "\n")
     if(not db.subscriber_exists(message.from_user.id)):
         # если юзера нет в базе, добавляем его
         db.add_subscriber(message.from_user.username, message.from_user.id)
@@ -51,6 +57,8 @@ async def subscribe(message: types.Message):
 # Команда отписки
 @dp.message_handler(commands=['unsubscribe'])
 async def unsubscribe(message: types.Message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.username) + "\nText: " + str(message.text) + "\n")
     if(not db.subscriber_exists(message.from_user.id)):
         # если юзера нет в базе, добавляем его с неактивной подпиской (запоминаем)
         db.add_subscriber(message.from_user.username,
@@ -94,6 +102,8 @@ async def scheduled(wait_for):
 # Просто разговор
 @dp.message_handler(content_types=['text'])
 async def talk(message: types.Message):
+    print("Id: " + str(message.from_user.id) + "\nFirst Name: " +
+          str(message.from_user.username) + "\nText: " + str(message.text) + "\n")
     await message.answer(message.from_user.username)
 
 
