@@ -1,6 +1,6 @@
 # appdouvenderbot
 MyTelegramBot
 
-Telegram ID: @appvenderbot
+Telegram ID: @appdouvenderbot
 
 Language: python
