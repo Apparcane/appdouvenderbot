@@ -10,6 +10,7 @@ class StopGame:
     url = 'https://stopgame.ru/review/new'
     lastkey = ""
     lastkey_file = ""
+    name = 0
 
     def __init__(self, lastkey_file):
         self.lastkey_file = lastkey_file
@@ -68,8 +69,9 @@ class StopGame:
         filename = os.path.basename(a.path)
         open(filename, 'wb').write(r.content)
         os.path.isfile(filename)
-        os.rename(filename, f"./picture/{filename}")
-        filepath = "./picture/" + filename
+        os.rename(filename, f"./picture/{self.name} _ {filename}")
+        filepath = "./picture/" + str(self.name) + " _ " + filename
+        self.name = self.name + 1
 
         return filepath
 
