@@ -1,6 +1,7 @@
 import config
 import logging
 import asyncio
+from ongoing import *
 from datetime import datetime
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -38,6 +39,26 @@ async def subscribe(message: types.Message):
     await message.answer(f'Привет, меня зовут {me.first_name}. Я пока что в разработке, так что не ожидай много-го 😀')
 
 
+@dp.message_handler(commands=['news'])
+async def news(message: types.Message):
+    try:
+        await message.answer("Одну секунду ...")
+
+        answer = ''
+        clock = 0
+
+        for i in ongoing_all(1):
+            answer = str(answer) + str(i) + str('\n')
+            clock = clock + 1
+            if clock % 11 == 0:
+                await message.answer(answer)
+                clock = 1
+                answer = ''
+                await message.answer(answer)
+
+    except Exception as e:
+        print(repr(e))
+
 # Команда активации подписки
 @dp.message_handler(commands=['subscribe'])
 async def subscribe(message: types.Message):
@@ -72,31 +93,31 @@ async def unsubscribe(message: types.Message):
 
 
 # Сама рассылка
-async def scheduled(wait_for):
-    id = chat_id.get()
-    while True:
-        await asyncio.sleep(wait_for)
+# async def scheduled(wait_for):
+#     id = chat_id.get()
+#     while True:
+#         await asyncio.sleep(wait_for)
 
-        # провераем наличие новых игр
-        new_games = sg.new_games()
+#         # провераем наличие новых игр
+#         new_games = sg.new_games()
 
-        if(new_games):
-            # если игры есть, переворачиваем список и итерируем
-            new_games.reverse()
+#         if(new_games):
+#             # если игры есть, переворачиваем список и итерируем
+#             new_games.reverse()
 
-            for ng in new_games:
-                nfo = sg.game_info(ng)
+#             for ng in new_games:
+#                 nfo = sg.game_info(ng)
 
-                # получаем список подписчиков бота
-                subscriptions = db.get_subscriptions()
+#                 # получаем список подписчиков бота
+#                 subscriptions = db.get_subscriptions()
 
-                # отправляем всем новость
-                with open(sg.download_image(nfo['image']), 'rb') as photo:
-                    for s in subscriptions:
-                        await bot.send_photo(s[0], photo, caption=nfo['title'] + "\n" + "Оценка: " + nfo['score'] + "\n" + nfo['excerpt'] + "\n\n" + nfo['link'], disable_notification=True)
+#                 # отправляем всем новость
+#                 with open(sg.download_image(nfo['image']), 'rb') as photo:
+#                     for s in subscriptions:
+#                         await bot.send_photo(s[0], photo, caption=nfo['title'] + "\n" + "Оценка: " + nfo['score'] + "\n" + nfo['excerpt'] + "\n\n" + nfo['link'], disable_notification=True)
 
-                # обновляем ключ
-                sg.update_lastkey(nfo['id'])
+#                 # обновляем ключ
+#                 sg.update_lastkey(nfo['id'])
 
 
 # Просто разговор
@@ -110,5 +131,5 @@ async def talk(message: types.Message):
 # запускаем лонг поллинг
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
-    loop.create_task(scheduled(10))  # 10 секунд
+    # loop.create_task(scheduled(10))  # 10 секунд
     executor.start_polling(dp, skip_updates=True)
